@@ -24,3 +24,12 @@ export const getSnippets = async () => {
     console.log(error)
   }
 }
+
+export const getSnippetByID = async (id: string) => {
+  try {
+    const snippet = await db.snippet.findUnique({ where: { id: parseInt(id) } })
+    return snippet
+  } catch (error) {
+    console.log(error)
+  }
+}

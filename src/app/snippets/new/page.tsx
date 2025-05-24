@@ -1,4 +1,4 @@
-import { createSnippetAction } from "@/app/actions/create-snippet-action"
+import { createSnippetAction } from "@/actions/create-snippet-action"
 
 export const metadata = {
   title: "Create snippet",
@@ -9,11 +9,7 @@ const CreateSnippetPage = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-4 h-10">
-        <h2 className="text-3xl">All Snippets</h2>
-        <div className="flex gap-4">
-          <button className="text-2xl border-2 px-4 py-2">Edit</button>
-          <button className="text-2xl border-2 px-4 py-2">Delete</button>
-        </div>
+        <h2 className="text-3xl">Create Snippets</h2>
       </div>
       <form className="m-auto flex flex-col gap-3" action={createSnippetAction}>
         <label>

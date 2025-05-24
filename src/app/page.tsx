@@ -1,5 +1,6 @@
 import Link from "next/link"
-// import { getSnippets } from "./db"
+import { getSnippets } from "@/db"
+import { snippet } from "@/interfaces/snippet"
 
 export const metadata = {
   title: "List of snippets",
@@ -7,8 +8,12 @@ export const metadata = {
 }
 
 const HomePage = async () => {
-  // const snippets = await getSnippets()
-  // console.log(snippets)
+  let snippets: snippet[] = []
+  try {
+    snippets = (await getSnippets()) as snippet[]
+  } catch (error) {
+    console.log(error)
+  }
   return (
     <>
       <div className="flex justify-between items-center mb-16 h-10">
@@ -17,7 +22,17 @@ const HomePage = async () => {
           New
         </Link>
       </div>
-      <div>I am the list</div>
+      {snippets.map(({ title, id }) => {
+        return (
+          <ul key={id}>
+            <Link href={`/snippets/${id}`}>
+              <li className="border-2 h-12 flex items-center pl-6 mb-6 text-xl">
+                {title}
+              </li>
+            </Link>
+          </ul>
+        )
+      })}
     </>
   )
 }
