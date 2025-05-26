@@ -1,35 +1,47 @@
-import SnippetEditForm from "@/components/SnippetEditForm"
-import { getSnippetByID } from "@/db"
-import { snippet } from "@/interfaces/snippet"
+import Link from "next/link"
 import { notFound } from "next/navigation"
+import { db } from "@/db"
+import * as actions from "@/actions"
 
-export const metadata = {
-  title: "Create snippet",
-  description: "Add new snippet",
+interface SnippetShowPageProps {
+  params: Promise<{
+    id: string
+  }>
 }
 
-const EditSnippetPage = async ({ params }: { params: { id: string } }) => {
-  const { id } = await params
-  let snippet: snippet | null = null
-  try {
-    snippet = (await getSnippetByID(id)) as snippet
-  } catch (error) {
-    console.log(error)
-  }
+export default async function SnippetShowPage(props: SnippetShowPageProps) {
+  await new Promise((r) => setTimeout(r, 2000))
 
-  if (!snippet) return notFound()
+  const { id } = await props.params
+
+  const snippet = await db.snippet.findFirst({
+    where: { id: parseInt(id) },
+  })
+
+  if (!snippet) {
+    return notFound()
+  }
+  const deleteSnippetAction = actions.deleteSnippet.bind(null, snippet.id)
+
   return (
-    <>
-      <div className="flex justify-between items-center mb-16 h-10">
-        <h2 className="text-3xl">Update Snippets : {id}</h2>
+    <div>
+      <div className="flex m-4 justify-between items-center">
+        <h1 className="text-xl font-bold">{snippet.title}</h1>
         <div className="flex gap-4">
-          <button className="text-2xl border-2 px-4 py-2">Edit</button>
-          <button className="text-2xl border-2 px-4 py-2">Delete</button>
+          <Link
+            href={`/snippets/${snippet.id}/edit`}
+            className="p-2 border rounded"
+          >
+            Edit
+          </Link>
+          <form action={deleteSnippetAction}>
+            <button className="p-2 border rounded">Delete</button>
+          </form>
         </div>
       </div>
-      <SnippetEditForm snippet={snippet} />
-    </>
+      <pre className="p-3 border rounded bg-gray-200 border-gray-200">
+        <code>{snippet.code}</code>
+      </pre>
+    </div>
   )
 }
-
-export default EditSnippetPage

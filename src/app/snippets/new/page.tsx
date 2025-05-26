@@ -1,43 +1,57 @@
-import { createSnippetAction } from "@/actions/create-snippet-action"
+import { redirect } from 'next/navigation';
+import { db } from '@/db';
 
-export const metadata = {
-  title: "Create snippet",
-  description: "Add new snippet",
-}
+export default function SnippetCreatePage() {
+  async function createSnippet(formData: FormData) {
+    // This needs to be a server action!
+    'use server';
 
-const CreateSnippetPage = () => {
+    // Check the user's inputs and make sure they're valid
+    const title = formData.get('title') as string;
+    const code = formData.get('code') as string;
+
+    // Create a new record in the database
+    const snippet = await db.snippet.create({
+      data: {
+        title,
+        code,
+      },
+    });
+
+    // Redirect the user back to the root route
+    redirect('/');
+  }
+
   return (
-    <>
-      <div className="flex justify-between items-center mb-4 h-10">
-        <h2 className="text-3xl">Create Snippets</h2>
-      </div>
-      <form className="m-auto flex flex-col gap-3" action={createSnippetAction}>
-        <label>
-          <div className="flex flex-col gap-2">
-            <span className="text-xl">Title</span>
-            <input type="text" name="title" className="border-2 px-1" />
-          </div>
-        </label>
-        <label className="mb-2">
-          <div className="flex flex-col gap-2">
-            <span className="text-xl">Snippet</span>
-            <textarea
-              name="code"
-              id=""
-              className="border-2 pt-1 mb-6"
-              rows={13}
-            ></textarea>
-          </div>
-        </label>
-        <button
-          type="submit"
-          className="bg-blue-500 py-2 text-white rounded-lg"
-        >
-          Create Snippet
-        </button>
-      </form>
-    </>
-  )
-}
+    <form action={createSnippet}>
+      <h3 className="font-bold m-3">Create a Snippet</h3>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4">
+          <label className="w-12" htmlFor="title">
+            Title
+          </label>
+          <input
+            name="title"
+            className="border rounded p-2 w-full"
+            id="title"
+          />
+        </div>
 
-export default CreateSnippetPage
+        <div className="flex gap-4">
+          <label className="w-12" htmlFor="code">
+            Code
+          </label>
+          <textarea
+            name="code"
+            className="border rounded p-2 w-full"
+            id="code"
+          />
+        </div>
+
+        <button type="submit" className="rounded p-2 bg-blue-200">
+          Create
+        </button>
+      </div>
+    </form>
+  );
+}

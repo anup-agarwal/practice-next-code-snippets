@@ -33,3 +33,19 @@ export const getSnippetByID = async (id: string) => {
     console.log(error)
   }
 }
+
+export const updateSnippet = async (
+  id: string,
+  title: string,
+  code: string
+) => {
+  try {
+    const snippet = await db.snippet.update({
+      where: { id: parseInt(id) },
+      data: { title, code },
+    })
+    return snippet
+  } catch (error) {
+    console.log(error)
+  }
+}
